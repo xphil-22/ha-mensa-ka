@@ -48,6 +48,22 @@ ruff check custom_components tests
 pytest tests/ -v
 ```
 
+## Browser-Test in lokaler Home-Assistant-Instanz
+
+Fuer einen echten UI-Test der Integration gibt es eine lokale Dev-Umgebung mit Docker:
+
+```bash
+docker compose -f docker-compose.dev.yml up -d
+```
+
+Danach `http://localhost:8123` im Browser oeffnen und den Home-Assistant-Onboarding-Flow einmal abschliessen, falls beim ersten Start noch kein Benutzer existiert. Anschliessend unter `Einstellungen -> Geraete & Dienste -> Integration hinzufuegen` nach `KIT Mensa` suchen und den Config Flow durchklicken.
+
+Logs:
+
+```bash
+docker logs --tail 120 ha-mensa-ka-dev
+```
+
 ## Lizenz
 
 MIT, siehe [LICENSE](LICENSE). Die Daten stammen vom [Studierendenwerk Karlsruhe](https://www.sw-ka.de/) über die API von [kronos-et-al/MensaApp](https://github.com/kronos-et-al/MensaApp).
