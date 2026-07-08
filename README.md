@@ -66,7 +66,7 @@ This keeps the dashboard representation clean while preserving the richer multi-
 
 ## Example Dashboard
 
-The following Markdown card is intended for the `v1.1` sensor entity. It renders the structured `lines` attribute into a layout that is closer to the official MensaApp presentation.
+The following Markdown card is intended for the sensor entity. It renders the structured `lines` attribute into a layout that is closer to the official MensaApp presentation.
 
 A more complete paste-ready Lovelace example is available in [examples/dashboard/mensa_dashboard.yaml](examples/dashboard/mensa_dashboard.yaml).
 
@@ -111,7 +111,7 @@ You can duplicate the card for multiple canteens by changing the entity id, or u
 
 ## Manual QA Checklist
 
-For manual verification of the `v1.1` sensor implementation:
+For manual verification of the sensor implementation:
 
 1. Restart the local Home Assistant dev container:
    `docker compose -f docker-compose.dev.yml up -d`
