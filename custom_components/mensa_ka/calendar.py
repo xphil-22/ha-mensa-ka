@@ -20,7 +20,7 @@ from homeassistant.util import dt as dt_util
 
 from .api import Meal, MealDay
 from .const import ADDITIVE_LABELS, ALLERGEN_LABELS, DOMAIN, FOOD_TYPE_LABELS
-from .coordinator import MensaConfigEntry, MensaKaCoordinator
+from .coordinator import MensaConfigEntry, MensaKaCoordinator, pick_current_meal_day
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -97,13 +97,10 @@ class MensaKaCalendar(CoordinatorEntity[MensaKaCoordinator], CalendarEntity):
     @property
     def event(self) -> CalendarEvent | None:
         """Return the current or next upcoming event."""
-        today = dt_util.now().date()
-        for meal_day in self.coordinator.data.get(self._canteen_id, []):
-            if meal_day.day < today:
-                continue
-            if event := _build_event(self._canteen_name, meal_day):
-                return event
-        return None
+        meal_day = pick_current_meal_day(self.coordinator.data.get(self._canteen_id, []))
+        if meal_day is None:
+            return None
+        return _build_event(self._canteen_name, meal_day)
 
     async def async_get_events(
         self, hass: HomeAssistant, start_date: datetime, end_date: datetime

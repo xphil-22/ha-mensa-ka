@@ -13,6 +13,7 @@ MEAL = Meal(
     price=Price(student=360, employee=460, guest=520, pupil=400),
     allergens=["SO", "WE"],
     additives=["PHOSPHATE"],
+    images=[],
 )
 
 

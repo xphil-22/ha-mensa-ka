@@ -1,4 +1,4 @@
-"""End-to-end test of setting up a config entry: coordinator + calendar entity."""
+"""End-to-end test of setting up a config entry: coordinator + entities."""
 
 import aiohttp
 from homeassistant.config_entries import ConfigEntryState
@@ -34,7 +34,9 @@ def _mock_api(aioclient_mock) -> None:
     aioclient_mock.post(API_URL, side_effect=respond)
 
 
-async def test_setup_entry_creates_calendar_per_canteen(hass: HomeAssistant, aioclient_mock):
+async def test_setup_entry_creates_calendar_and_sensor_per_canteen(
+    hass: HomeAssistant, aioclient_mock
+):
     _mock_api(aioclient_mock)
 
     entry = MockConfigEntry(
@@ -46,11 +48,12 @@ async def test_setup_entry_creates_calendar_per_canteen(hass: HomeAssistant, aio
     await hass.async_block_till_done()
 
     assert entry.state is ConfigEntryState.LOADED
-    state = hass.states.get("calendar.mensa_adenauerring")
-    assert state is not None
+    assert hass.states.get("calendar.mensa_adenauerring") is not None
+    assert hass.states.get("sensor.mensa_adenauerring_meal_plan") is not None
 
-    # only the "aaa" canteen was configured, "bbb" must not get an entity
+    # Only the configured canteen gets entities.
     assert hass.states.get("calendar.mensa_moltke") is None
+    assert hass.states.get("sensor.mensa_moltke_meal_plan") is None
 
 
 async def test_setup_entry_not_ready_when_api_unreachable(hass: HomeAssistant, aioclient_mock):
@@ -78,5 +81,6 @@ async def test_unload_entry(hass: HomeAssistant, aioclient_mock):
     await hass.async_block_till_done()
 
     assert entry.state is ConfigEntryState.NOT_LOADED
-    # HA marks entities of an unloaded entry "unavailable" rather than removing them
+    # HA marks entities of an unloaded entry "unavailable" rather than removing them.
     assert hass.states.get("calendar.mensa_adenauerring").state == "unavailable"
+    assert hass.states.get("sensor.mensa_adenauerring_meal_plan").state == "unavailable"

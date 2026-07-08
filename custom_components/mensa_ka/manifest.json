@@ -4,10 +4,10 @@
   "codeowners": ["@xphil-22"],
   "config_flow": true,
   "documentation": "https://github.com/xphil-22/ha-mensa-ka",
-  "issue_tracker": "https://github.com/xphil-22/ha-mensa-ka/issues",
-  "iot_class": "cloud_polling",
   "integration_type": "hub",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/xphil-22/ha-mensa-ka/issues",
   "requirements": [],
   "single_config_entry": true,
-  "version": "0.1.0"
+  "version": "0.2.0"
 }

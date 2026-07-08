@@ -15,7 +15,7 @@ DEFAULT_FORECAST_DAYS = 14
 MIN_FORECAST_DAYS = 1
 MAX_FORECAST_DAYS = 30
 
-PLATFORMS = [Platform.CALENDAR]
+PLATFORMS = [Platform.CALENDAR, Platform.SENSOR]
 
 # Labels are taken verbatim (only shortened) from the descriptions the API itself
 # returns for these enum values, to avoid mistranslating allergen-relevant data.
@@ -80,4 +80,10 @@ FOOD_TYPE_LABELS: dict[str, str] = {
     "FISH": "Fish",
     "POULTRY": "Poultry",
     "UNKNOWN": "Unknown",
+}
+
+FOOD_TYPE_ICONS: dict[str, str] = {
+    "vegan": "\U0001f331",
+    "vegetarian": "\U0001f955",
+    "default": "\U0001f356",
 }
