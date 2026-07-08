@@ -1,0 +1,13 @@
+{
+  "domain": "mensa_ka",
+  "name": "KIT Mensa",
+  "codeowners": ["@xphil-22"],
+  "config_flow": true,
+  "documentation": "https://github.com/xphil-22/ha-mensa-ka",
+  "issue_tracker": "https://github.com/xphil-22/ha-mensa-ka/issues",
+  "iot_class": "cloud_polling",
+  "integration_type": "hub",
+  "requirements": [],
+  "single_config_entry": true,
+  "version": "0.1.0"
+}
