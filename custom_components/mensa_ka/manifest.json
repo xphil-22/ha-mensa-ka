@@ -1,6 +1,6 @@
 {
   "domain": "mensa_ka",
-  "name": "KIT Mensa",
+  "name": "Karlsruher Mensen",
   "codeowners": ["@xphil-22"],
   "config_flow": true,
   "documentation": "https://github.com/xphil-22/ha-mensa-ka",

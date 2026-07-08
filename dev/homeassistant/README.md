@@ -14,7 +14,7 @@ Then open `http://localhost:8123` in your browser.
 
 1. If Home Assistant asks you to create a user on first startup, complete the onboarding flow once.
 2. Go to `Settings -> Devices & Services -> Add Integration`.
-3. Search for `KIT Mensa` and go through the Config Flow.
+3. Search for `Karlsruher Mensen` and go through the Config Flow.
 
 ## Logs
 

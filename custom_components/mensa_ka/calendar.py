@@ -1,4 +1,4 @@
-"""Calendar platform for the KIT Mensa integration.
+"""Calendar platform for the Karlsruher Mensen integration.
 
 Each configured canteen gets one calendar entity with one all-day event per
 day it serves meals. The event description lists every meal offered that

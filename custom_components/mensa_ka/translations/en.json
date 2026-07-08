@@ -2,7 +2,7 @@
   "config": {
     "step": {
       "user": {
-        "title": "KIT Mensa",
+        "title": "Karlsruher Mensen",
         "description": "Select which canteens/cafeterias you want to track.",
         "data": {
           "canteens": "Canteens",
@@ -14,14 +14,14 @@
       "no_canteens_selected": "Select at least one canteen."
     },
     "abort": {
-      "already_configured": "KIT Mensa is already configured. Use the options to change the tracked canteens.",
-      "cannot_connect": "Could not reach the KIT Mensa API. Please try again later."
+      "already_configured": "Karlsruher Mensen is already configured. Use the options to change the tracked canteens.",
+      "cannot_connect": "Could not reach the Karlsruher Mensen API. Please try again later."
     }
   },
   "options": {
     "step": {
       "init": {
-        "title": "KIT Mensa",
+        "title": "Karlsruher Mensen",
         "description": "Select which canteens/cafeterias you want to track.",
         "data": {
           "canteens": "Canteens",
@@ -33,7 +33,7 @@
       "no_canteens_selected": "Select at least one canteen."
     },
     "abort": {
-      "cannot_connect": "Could not reach the KIT Mensa API. Please try again later."
+      "cannot_connect": "Could not reach the Karlsruher Mensen API. Please try again later."
     }
   }
 }

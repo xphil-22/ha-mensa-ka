@@ -1,4 +1,4 @@
-"""The KIT Mensa integration."""
+"""The Karlsruher Mensen integration."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ from .coordinator import MensaConfigEntry, MensaKaCoordinator, MensaRuntimeData
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: MensaConfigEntry) -> bool:
-    """Set up the KIT Mensa integration from a config entry."""
+    """Set up the Karlsruher Mensen integration from a config entry."""
     session = async_get_clientsession(hass)
     try:
         canteens = await async_get_canteens(session)

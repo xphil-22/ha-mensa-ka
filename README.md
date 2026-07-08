@@ -1,14 +1,16 @@
-# KIT Mensa for Home Assistant
+# Karlsruher Mensen for Home Assistant
 
 [![Validate](https://github.com/xphil-22/ha-mensa-ka/actions/workflows/validate.yml/badge.svg)](https://github.com/xphil-22/ha-mensa-ka/actions/workflows/validate.yml)
 [![Test](https://github.com/xphil-22/ha-mensa-ka/actions/workflows/test.yml/badge.svg)](https://github.com/xphil-22/ha-mensa-ka/actions/workflows/test.yml)
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
 
-Home Assistant integration for meal plans from the canteens and cafeterias of Studierendenwerk Karlsruhe (KIT). It uses the public GraphQL API from [kronos-et-al/MensaApp](https://github.com/kronos-et-al/MensaApp) (`api.mensa-ka.de`).
+Home Assistant integration for meal plans from the canteens and cafeterias operated by Studierendenwerk Karlsruhe, including KIT, Hochschule für Musik, and other Karlsruhe/Pforzheim locations. It uses the public GraphQL API from [kronos-et-al/MensaApp](https://github.com/kronos-et-al/MensaApp) (`api.mensa-ka.de`).
 
 For each selected canteen, the integration creates one **calendar entity** with a daily event whenever meals are offered. The event contains all meals for that day, grouped by serving line, including price, meal type (vegan, vegetarian, and so on), allergens, and additives.
 
 The integration exposes an additional **sensor entity** per canteen as the primary dashboard-friendly representation. The calendar entity remains available for multi-day and agenda-style use.
+
+![Karlsruher Mensen dashboard example, showing two canteens side by side with their meal plans grouped by serving line](screenshot/dashboard.png)
 
 ## Features
 
@@ -29,7 +31,7 @@ The integration is **read-only**: it only fetches meal plans. According to the u
 
 1. In HACS, go to `Integrations -> Menu (⋮) -> Custom repositories`.
 2. Add `https://github.com/xphil-22/ha-mensa-ka` as a repository with category `Integration`.
-3. Install `KIT Mensa` and restart Home Assistant.
+3. Install `Karlsruher Mensen` and restart Home Assistant.
 
 ### Manual
 
@@ -37,7 +39,7 @@ Copy the `custom_components/mensa_ka` folder into the `custom_components` direct
 
 ## Setup
 
-1. Go to `Settings -> Devices & Services -> Add Integration` and search for `KIT Mensa`.
+1. Go to `Settings -> Devices & Services -> Add Integration` and search for `Karlsruher Mensen`.
 2. Select the canteens or cafeterias you want to track and choose how many days ahead should be fetched.
 3. A device with both a calendar entity and a sensor entity is created for each selected canteen, for example `calendar.mensa_adenauerring` and `sensor.mensa_adenauerring_meal_plan`.
 
@@ -66,48 +68,9 @@ This keeps the dashboard representation clean while preserving the richer multi-
 
 ## Example Dashboard
 
-The following Markdown card is intended for the sensor entity. It renders the structured `lines` attribute into a layout that is closer to the official MensaApp presentation.
+A paste-ready Lovelace example is available in [examples/dashboard/mensa_dashboard.yaml](examples/dashboard/mensa_dashboard.yaml): a single Markdown card that renders the structured `lines` attribute into a layout close to the official MensaApp presentation.
 
-A more complete paste-ready Lovelace example is available in [examples/dashboard/mensa_dashboard.yaml](examples/dashboard/mensa_dashboard.yaml).
-
-Assumption:
-- your entity id is similar to `sensor.mensa_adenauerring_meal_plan`
-
-```yaml
-type: markdown
-title: KIT Mensa
-content: >
-  {% set entity = 'sensor.mensa_adenauerring_meal_plan' %}
-  {% set day = state_attr(entity, 'day') %}
-  {% set lines = state_attr(entity, 'lines') or [] %}
-
-  {% if not lines %}
-  No meals available.
-  {% else %}
-  **{{ day }}**
-
-  {% for line in lines %}
-  ### {{ line.line }}
-  {% for meal in line.meals %}
-  - {{ meal.diet_icon }} **{{ meal.name }}**
-    {% if meal.diet_label %}({{ meal.diet_label }}){% endif %}
-    {% if meal.image_url %}
-    ![{{ meal.name }}]({{ meal.image_url }})
-    {% endif %}
-    - Student: {{ '%.2f'|format(meal.price_student) }} EUR
-    {% if meal.allergens %}
-    - Allergens: {{ meal.allergens | join(', ') }}
-    {% endif %}
-    {% if meal.additives %}
-    - Additives: {{ meal.additives | join(', ') }}
-    {% endif %}
-  {% endfor %}
-
-  {% endfor %}
-  {% endif %}
-```
-
-You can duplicate the card for multiple canteens by changing the entity id, or use a more advanced template/dashboard layout once the sensor data model is in place.
+The card auto-detects every canteen you have configured via `integration_entities('mensa_ka')`, so it works unchanged for one canteen or ten — there is no entity id to edit, and nothing to duplicate when you add or remove a canteen in the integration options.
 
 ## Manual QA Checklist
 
@@ -146,7 +109,7 @@ For a real UI test of the integration, a local Docker-based Home Assistant dev e
 docker compose -f docker-compose.dev.yml up -d
 ```
 
-Then open `http://localhost:8123` in your browser and complete the Home Assistant onboarding flow if no user exists yet. After that, go to `Settings -> Devices & Services -> Add Integration`, search for `KIT Mensa`, and walk through the Config Flow.
+Then open `http://localhost:8123` in your browser and complete the Home Assistant onboarding flow if no user exists yet. After that, go to `Settings -> Devices & Services -> Add Integration`, search for `Karlsruher Mensen`, and walk through the Config Flow.
 
 Logs:
 

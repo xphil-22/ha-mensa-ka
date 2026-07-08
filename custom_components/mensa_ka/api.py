@@ -1,4 +1,4 @@
-"""Minimal async GraphQL client for the KIT Mensa API (api.mensa-ka.de).
+"""Minimal async GraphQL client for the Karlsruher Mensen API (api.mensa-ka.de).
 
 Only read-only queries are used (`getCanteens`, `getCanteen`). Mutations
 (rating meals, uploading images) require a request signature whose API key

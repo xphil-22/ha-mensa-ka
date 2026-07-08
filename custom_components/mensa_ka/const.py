@@ -1,4 +1,4 @@
-"""Constants for the KIT Mensa integration."""
+"""Constants for the Karlsruher Mensen integration."""
 
 from datetime import timedelta
 

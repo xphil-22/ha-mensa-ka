@@ -1,4 +1,4 @@
-"""Data update coordinator for the KIT Mensa integration."""
+"""Data update coordinator for the Karlsruher Mensen integration."""
 
 from __future__ import annotations
 

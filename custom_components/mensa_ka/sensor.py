@@ -1,4 +1,4 @@
-"""Sensor platform for the KIT Mensa integration."""
+"""Sensor platform for the Karlsruher Mensen integration."""
 
 from __future__ import annotations
 

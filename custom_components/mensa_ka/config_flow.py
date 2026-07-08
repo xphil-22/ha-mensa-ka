@@ -1,4 +1,4 @@
-"""Config flow for the KIT Mensa integration."""
+"""Config flow for the Karlsruher Mensen integration."""
 
 from __future__ import annotations
 
@@ -48,7 +48,7 @@ def _canteens_schema(choices: dict[str, str], defaults: list[str]) -> vol.Schema
 
 
 class MensaKaConfigFlow(ConfigFlow, domain=DOMAIN):
-    """Handle the (single) config flow for the KIT Mensa integration."""
+    """Handle the (single) config flow for the Karlsruher Mensen integration."""
 
     VERSION = 1
 
@@ -65,14 +65,14 @@ class MensaKaConfigFlow(ConfigFlow, domain=DOMAIN):
         try:
             choices = await _async_fetch_canteen_choices(self.hass)
         except MensaApiError:
-            _LOGGER.exception("Failed to fetch canteens from the KIT Mensa API")
+            _LOGGER.exception("Failed to fetch canteens from the Karlsruher Mensen API")
             return self.async_abort(reason="cannot_connect")
 
         if user_input is not None:
             if not user_input[CONF_CANTEENS]:
                 errors["base"] = "no_canteens_selected"
             else:
-                return self.async_create_entry(title="KIT Mensa", data=user_input)
+                return self.async_create_entry(title="Karlsruher Mensen", data=user_input)
 
         return self.async_show_form(
             step_id="user",
@@ -96,7 +96,7 @@ class MensaKaOptionsFlow(OptionsFlow):
         try:
             choices = await _async_fetch_canteen_choices(self.hass)
         except MensaApiError:
-            _LOGGER.exception("Failed to fetch canteens from the KIT Mensa API")
+            _LOGGER.exception("Failed to fetch canteens from the Karlsruher Mensen API")
             return self.async_abort(reason="cannot_connect")
 
         current = self.config_entry.options.get(
