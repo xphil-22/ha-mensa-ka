@@ -10,11 +10,29 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.util import dt as dt_util
 
 from .api import MealDay, MensaApiError, async_get_meal_plans
 from .const import CONF_CANTEENS, CONF_FORECAST_DAYS, DEFAULT_FORECAST_DAYS, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
+
+
+def pick_current_meal_day(meal_days: list[MealDay]) -> MealDay | None:
+    """Pick the meal day to expose as the current dashboard view."""
+    today = dt_util.now().date()
+
+    for meal_day in meal_days:
+        if meal_day.day < today:
+            continue
+        if meal_day.day == today:
+            if meal_day.meals:
+                return meal_day
+            continue
+        if meal_day.meals:
+            return meal_day
+
+    return None
 
 
 class MensaKaCoordinator(DataUpdateCoordinator[dict[str, list[MealDay]]]):

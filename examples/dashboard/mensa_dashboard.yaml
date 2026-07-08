@@ -1,0 +1,63 @@
+title: KIT Mensa
+path: kit-mensa
+icon: mdi:silverware-fork-knife
+cards:
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        title: Today's Overview
+        content: >-
+          {% set entity = 'sensor.mensa_adenauerring_meal_plan' %}
+          {% set day = state_attr(entity, 'day') %}
+          {% set lines = state_attr(entity, 'lines') or [] %}
+          {% set meal_count = states(entity) %}
+
+          {% if not lines %}
+          ## No meals available
+          No meals are currently available for this canteen.
+          {% else %}
+          ## {{ day }}
+          **{{ meal_count }} meals**
+          {% endif %}
+
+      - type: entities
+        title: Canteen Entities
+        show_header_toggle: false
+        entities:
+          - entity: sensor.mensa_adenauerring_meal_plan
+            name: Meal plan sensor
+          - entity: calendar.mensa_adenauerring
+            name: Calendar view
+
+      - type: markdown
+        title: Meal Plan
+        content: >-
+          {% set entity = 'sensor.mensa_adenauerring_meal_plan' %}
+          {% set lines = state_attr(entity, 'lines') or [] %}
+
+          {% if not lines %}
+          No meals available.
+          {% else %}
+          {% for line in lines %}
+          ### {{ line.line }}
+
+          {% for meal in line.meals %}
+          - {{ meal.diet_icon }} **{{ meal.name }}**
+            {% if meal.diet_label %}({{ meal.diet_label }}){% endif %}
+            {% if meal.image_url %}
+            <img src="{{ meal.image_url }}" alt="{{ meal.name }}" style="width: 140px; height: 100px; object-fit: cover; border-radius: 10px; display: block; margin: 8px 0;" />
+            {% endif %}
+            - Student: {{ '%.2f'|format(meal.price_student) }} EUR
+            {% if meal.price_employee is defined %}
+            - Employee: {{ '%.2f'|format(meal.price_employee) }} EUR
+            {% endif %}
+            {% if meal.allergens %}
+            - Allergens: {{ meal.allergens | join(', ') }}
+            {% endif %}
+            {% if meal.additives %}
+            - Additives: {{ meal.additives | join(', ') }}
+            {% endif %}
+
+          {% endfor %}
+          {% endfor %}
+          {% endif %}

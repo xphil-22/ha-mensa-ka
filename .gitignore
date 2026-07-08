@@ -11,5 +11,6 @@ venv/
 .vscode/
 .idea/
 .storage/
+uv.lock
 dev/homeassistant/config/*
 !dev/homeassistant/config/configuration.yaml

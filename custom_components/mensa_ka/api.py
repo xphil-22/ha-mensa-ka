@@ -55,6 +55,7 @@ class Meal:
     price: Price
     allergens: list[str]
     additives: list[str]
+    images: list[str]
 
 
 @dataclass
@@ -81,6 +82,7 @@ _MEAL_FIELDS = """
     price { student employee guest pupil }
     allergens
     additives
+    images { url }
 """
 
 
@@ -149,6 +151,7 @@ def _parse_meal(raw: dict[str, Any], line_name: str) -> Meal:
         ),
         allergens=list(raw["allergens"]),
         additives=list(raw["additives"]),
+        images=[image["url"] for image in raw.get("images", []) if "url" in image],
     )
 
 
