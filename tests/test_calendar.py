@@ -29,7 +29,7 @@ def test_build_event_builds_all_day_event():
     assert event.start == date(2026, 7, 8)
     assert event.end == date(2026, 7, 9)  # end is exclusive for all-day events
     assert "Mensa Test" in event.summary
-    assert "1 Gerichte" in event.summary
+    assert "1 meal" in event.summary
     assert "Chili sin Carne" in event.description
 
 

@@ -1,44 +1,52 @@
-# KIT Mensa für Home Assistant
+# KIT Mensa for Home Assistant
 
 [![Validate](https://github.com/xphil-22/ha-mensa-ka/actions/workflows/validate.yml/badge.svg)](https://github.com/xphil-22/ha-mensa-ka/actions/workflows/validate.yml)
 [![Test](https://github.com/xphil-22/ha-mensa-ka/actions/workflows/test.yml/badge.svg)](https://github.com/xphil-22/ha-mensa-ka/actions/workflows/test.yml)
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
 
-Home-Assistant-Integration für die Speisepläne der Mensen und Cafeterien des Studierendenwerks Karlsruhe (KIT). Nutzt die öffentliche GraphQL-API von [kronos-et-al/MensaApp](https://github.com/kronos-et-al/MensaApp) (`api.mensa-ka.de`).
+Home Assistant integration for meal plans from the canteens and cafeterias of Studierendenwerk Karlsruhe (KIT). It uses the public GraphQL API from [kronos-et-al/MensaApp](https://github.com/kronos-et-al/MensaApp) (`api.mensa-ka.de`).
 
-Für jede ausgewählte Mensa wird eine **Kalender-Entity** angelegt, mit einem Termin pro Tag, an dem die Mensa Essen anbietet. Der Termin enthält alle Gerichte dieses Tages (gruppiert nach Ausgabe/Linie) inklusive Preis, Ernährungstyp (vegan/vegetarisch/...), Allergenen und Zusatzstoffen.
+For each selected canteen, the integration creates one **calendar entity** with a daily event whenever meals are offered. The event contains all meals for that day, grouped by serving line, including price, meal type (vegan, vegetarian, and so on), allergens, and additives.
 
-## Umfang (v1)
+## Features
 
-Die Integration ist **read-only**: Es werden nur Speisepläne gelesen. Mutationen wie das Abgeben von Bewertungen oder das Hochladen von Bildern benötigen laut [`ApiAuth.md`](https://github.com/kronos-et-al/MensaApp/blob/main/doc/ApiAuth.md) der Upstream-API einen signierten Request mit einem API-Key, dessen Bezugsprozess dort selbst noch nicht dokumentiert ist. Deshalb sind diese Funktionen (noch) nicht implementiert.
+- Config Flow setup directly in Home Assistant
+- Support for multiple canteens and cafeterias in a single integration
+- Calendar entities with daily meals, prices, allergens, and additives
+- HACS-compatible structure for simple installation
+- Local Docker-based Home Assistant dev environment for UI testing
+
+## Scope (v1)
+
+The integration is **read-only**: it only fetches meal plans. According to the upstream API documentation in [`ApiAuth.md`](https://github.com/kronos-et-al/MensaApp/blob/main/doc/ApiAuth.md), mutations such as submitting ratings or uploading images require a signed request with an API key, and the process for obtaining that key is still not documented there. For that reason, these features are not implemented yet.
 
 ## Installation
 
-### Über HACS (empfohlen)
+### Via HACS (recommended)
 
-1. HACS → Integrationen → Menü (⋮) → *Benutzerdefinierte Repositories*.
-2. Repository-URL `https://github.com/xphil-22/ha-mensa-ka` mit Kategorie *Integration* hinzufügen.
-3. "KIT Mensa" installieren und Home Assistant neu starten.
+1. In HACS, go to `Integrations -> Menu (⋮) -> Custom repositories`.
+2. Add `https://github.com/xphil-22/ha-mensa-ka` as a repository with category `Integration`.
+3. Install `KIT Mensa` and restart Home Assistant.
 
-### Manuell
+### Manual
 
-Den Ordner `custom_components/mensa_ka` in das `custom_components`-Verzeichnis deiner Home-Assistant-Konfiguration kopieren und Home Assistant neu starten.
+Copy the `custom_components/mensa_ka` folder into the `custom_components` directory of your Home Assistant configuration and restart Home Assistant.
 
-## Einrichtung
+## Setup
 
-1. Einstellungen → Geräte & Dienste → Integration hinzufügen → "KIT Mensa" suchen.
-2. Die gewünschten Mensen/Cafeterien aus der Liste auswählen und die Anzahl der Tage festlegen, die im Voraus abgerufen werden sollen.
-3. Für jede ausgewählte Mensa wird ein Gerät mit einer Kalender-Entity angelegt (z. B. `calendar.mensa_adenauerring`).
+1. Go to `Settings -> Devices & Services -> Add Integration` and search for `KIT Mensa`.
+2. Select the canteens or cafeterias you want to track and choose how many days ahead should be fetched.
+3. A device with a calendar entity is created for each selected canteen, for example `calendar.mensa_adenauerring`.
 
-Die Auswahl der Mensen kann jederzeit über die Optionen der Integration angepasst werden.
+You can change the selected canteens at any time through the integration options.
 
 ## Roadmap
 
-- Zusätzliche Sensor-Entity ("heutige Gerichte") als Ergänzung zur Kalender-Entity.
-- Bewertungen abgeben, sobald der API-Key-Beschaffungsprozess upstream geklärt ist.
-- Aufnahme in [home-assistant/brands](https://github.com/home-assistant/brands) für ein eigenes Icon.
+- Additional sensor entity for today's meals alongside the calendar entity
+- Meal ratings once the upstream API key process is clarified
+- Inclusion in [home-assistant/brands](https://github.com/home-assistant/brands) for a dedicated icon
 
-## Entwicklung
+## Development
 
 ```bash
 python -m venv .venv
@@ -48,15 +56,15 @@ ruff check custom_components tests
 pytest tests/ -v
 ```
 
-## Browser-Test in lokaler Home-Assistant-Instanz
+## Browser Test in a Local Home Assistant Instance
 
-Fuer einen echten UI-Test der Integration gibt es eine lokale Dev-Umgebung mit Docker:
+For a real UI test of the integration, a local Docker-based Home Assistant dev environment is included:
 
 ```bash
 docker compose -f docker-compose.dev.yml up -d
 ```
 
-Danach `http://localhost:8123` im Browser oeffnen und den Home-Assistant-Onboarding-Flow einmal abschliessen, falls beim ersten Start noch kein Benutzer existiert. Anschliessend unter `Einstellungen -> Geraete & Dienste -> Integration hinzufuegen` nach `KIT Mensa` suchen und den Config Flow durchklicken.
+Then open `http://localhost:8123` in your browser and complete the Home Assistant onboarding flow if no user exists yet. After that, go to `Settings -> Devices & Services -> Add Integration`, search for `KIT Mensa`, and walk through the Config Flow.
 
 Logs:
 
@@ -64,6 +72,12 @@ Logs:
 docker logs --tail 120 ha-mensa-ka-dev
 ```
 
-## Lizenz
+## Repository
 
-MIT, siehe [LICENSE](LICENSE). Die Daten stammen vom [Studierendenwerk Karlsruhe](https://www.sw-ka.de/) über die API von [kronos-et-al/MensaApp](https://github.com/kronos-et-al/MensaApp).
+- Issues: [GitHub Issues](https://github.com/xphil-22/ha-mensa-ka/issues)
+- Contributing: [CONTRIBUTING.md](CONTRIBUTING.md)
+- Security: [SECURITY.md](SECURITY.md)
+
+## License
+
+MIT, see [LICENSE](LICENSE). The meal data originates from [Studierendenwerk Karlsruhe](https://www.sw-ka.de/) via the API from [kronos-et-al/MensaApp](https://github.com/kronos-et-al/MensaApp).
