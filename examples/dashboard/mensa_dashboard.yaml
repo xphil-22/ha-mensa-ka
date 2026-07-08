@@ -15,6 +15,14 @@ cards:
   # the blank lines this template relies on to separate raw HTML blocks from
   # the next Markdown heading, which makes the heading get swallowed as part
   # of the previous HTML block instead of being rendered as a heading.
+  #
+  # Each <details> section (including all of its meals) is emitted as ONE
+  # uninterrupted template line with no standalone {% %} tag lines inside it.
+  # A `{% tag %}` that sits alone on its own line still renders to a blank
+  # line (Jinja does not trim by default), and a blank line in the middle of
+  # a raw HTML block ends that block early - the remaining lines then get
+  # parsed as Markdown again, and since they're indented 4+ spaces they turn
+  # into a literal, escaped code block instead of rendered HTML.
   - type: markdown
     title: Karlsruher Mensen
     content: |-
@@ -37,45 +45,9 @@ cards:
       **{{ day }}**
 
       {% for line in lines %}
-      <details open style="margin: 0 0 12px 0; border-radius: 14px; overflow: hidden; border: 1px solid rgba(127,127,127,0.22);">
-        <summary style="cursor: pointer; padding: 10px 14px; font-weight: 700; background: rgba(127,127,127,0.10); display: flex; justify-content: space-between; align-items: center;">
-          <span>{{ line.line }}</span>
-          <span style="opacity: 0.6; font-weight: 400; font-size: 0.85em;">{{ line.meals | length }} {{ "meal" if line.meals | length == 1 else "meals" }}</span>
-        </summary>
-        <div style="padding: 12px 14px; display: flex; flex-direction: column; gap: 10px;">
-      {% for meal in line.meals %}
-          <div style="display: flex; gap: 12px; align-items: flex-start;">
-            <div style="width: 72px; min-width: 72px; height: 72px; border-radius: 12px; overflow: hidden; background: rgba(127,127,127,0.16); display: flex; align-items: center; justify-content: center;">
-              {% if meal.image_url %}
-              <img src="{{ meal.image_url }}" alt="{{ meal.name }}" width="72" height="72" style="width: 72px; height: 72px; object-fit: contain; display: block; background: white;" />
-              {% else %}
-              <div style="font-size: 26px; line-height: 1;">{{ meal.diet_icon or "🍽️" }}</div>
-              {% endif %}
-            </div>
-            <div style="min-width: 0; flex: 1;">
-              <div style="font-weight: 600;">{{ meal.diet_icon }} {{ meal.name }}</div>
-              {% if meal.diet_label %}
-              <div style="opacity: 0.7; font-size: 0.85em; margin-top: 2px;">{{ meal.diet_label }}</div>
-              {% endif %}
-              <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;">
-                <span style="display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 0.78em; font-weight: 600; background: rgba(127,127,127,0.16);">Student {{ "%.2f"|format(meal.price_student) }} €</span>
-                {% if meal.price_employee is defined %}
-                <span style="display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 0.78em; font-weight: 600; background: rgba(127,127,127,0.16);">Employee {{ "%.2f"|format(meal.price_employee) }} €</span>
-                {% endif %}
-                {% for allergen in meal.allergens %}
-                <span style="display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 0.78em; background: rgba(255,152,0,0.22);">{{ allergen }}</span>
-                {% endfor %}
-                {% for additive in meal.additives %}
-                <span style="display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 0.78em; background: rgba(127,127,127,0.12);">{{ additive }}</span>
-                {% endfor %}
-              </div>
-            </div>
-          </div>
+      <details open style="margin: 0 0 12px 0; border-radius: 14px; overflow: hidden; border: 1px solid rgba(127,127,127,0.22);"><summary style="cursor: pointer; padding: 10px 14px; font-weight: 700; background: rgba(127,127,127,0.10); display: flex; justify-content: space-between; align-items: center;"><span>{{ line.line }}</span><span style="opacity: 0.6; font-weight: 400; font-size: 0.85em;">{{ line.meals | length }} {{ "meal" if line.meals | length == 1 else "meals" }}</span></summary><div style="padding: 12px 14px; display: flex; flex-direction: column; gap: 10px;">{% for meal in line.meals %}<div style="display: flex; gap: 12px; align-items: flex-start;"><div style="width: 72px; min-width: 72px; height: 72px; border-radius: 12px; overflow: hidden; background: rgba(127,127,127,0.16); display: flex; align-items: center; justify-content: center;">{% if meal.image_url %}<img src="{{ meal.image_url }}" alt="{{ meal.name }}" width="72" height="72" style="width: 72px; height: 72px; object-fit: contain; display: block; background: white;" />{% else %}<div style="font-size: 26px; line-height: 1;">{{ meal.diet_icon or "🍽️" }}</div>{% endif %}</div><div style="min-width: 0; flex: 1;"><div style="font-weight: 600;">{{ meal.diet_icon }} {{ meal.name }}</div>{% if meal.diet_label %}<div style="opacity: 0.7; font-size: 0.85em; margin-top: 2px;">{{ meal.diet_label }}</div>{% endif %}<div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;"><span style="display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 0.78em; font-weight: 600; background: rgba(127,127,127,0.16);">Student {{ "%.2f"|format(meal.price_student) }} €</span>{% if meal.price_employee is defined %}<span style="display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 0.78em; font-weight: 600; background: rgba(127,127,127,0.16);">Employee {{ "%.2f"|format(meal.price_employee) }} €</span>{% endif %}{% for allergen in meal.allergens %}<span style="display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 0.78em; background: rgba(255,152,0,0.22);">{{ allergen }}</span>{% endfor %}{% for additive in meal.additives %}<span style="display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 0.78em; background: rgba(127,127,127,0.12);">{{ additive }}</span>{% endfor %}</div></div></div>{% endfor %}</div></details>
       {% endfor %}
-        </div>
-      </details>
 
-      {% endfor %}
       {% endif %}
 
       {% endfor %}
