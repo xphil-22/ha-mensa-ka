@@ -10,7 +10,7 @@ For each selected canteen, the integration creates one **calendar entity** with 
 
 The integration exposes an additional **sensor entity** per canteen as the primary dashboard-friendly representation. The calendar entity remains available for multi-day and agenda-style use.
 
-![Karlsruher Mensen dashboard example, showing two canteens side by side with their meal plans grouped by serving line](screenshot/dashboard.png)
+![Karlsruher Mensen dashboard example, showing two canteens side by side with their meal plans grouped by collapsible serving-line sections and price/allergen/additive chips](screenshot/dashboard.png)
 
 ## Features
 
@@ -18,6 +18,7 @@ The integration exposes an additional **sensor entity** per canteen as the prima
 - Support for multiple canteens and cafeterias in a single integration
 - Calendar entities with daily meals, prices, allergens, and additives
 - Sensor entities with structured meal attributes for dashboard rendering
+- Self-registering `mensa-ka-card` Lovelace card for a native, richly styled meal-plan view
 - HACS-compatible structure for simple installation
 - Local Docker-based Home Assistant dev environment for UI testing
 
@@ -66,11 +67,24 @@ The intended sensor model per canteen is:
 
 This keeps the dashboard representation clean while preserving the richer multi-day browsing experience in the calendar entity.
 
+## Custom Lovelace Card
+
+The integration ships its own `mensa-ka-card` and registers it as a Lovelace resource automatically — there is nothing to add under `Settings -> Dashboards -> Resources`, it's available as soon as the integration is loaded.
+
+Add one card per canteen to any dashboard:
+
+```yaml
+type: custom:mensa-ka-card
+entity: sensor.mensa_adenauerring_meal_plan
+```
+
+Unlike a Markdown card, this card owns its own DOM instead of going through Home Assistant's Markdown sanitizer (which strips `style` attributes from embedded HTML), so the collapsible per-line sections, meal thumbnails, and price/allergen/additive chips actually render as designed, in both light and dark themes.
+
+A paste-ready example with one card per canteen is available in [examples/dashboard/mensa_card_dashboard.yaml](examples/dashboard/mensa_card_dashboard.yaml).
+
 ## Example Dashboard
 
-A paste-ready Lovelace example is available in [examples/dashboard/mensa_dashboard.yaml](examples/dashboard/mensa_dashboard.yaml): a single Markdown card that renders the structured `lines` attribute into a layout close to the official MensaApp presentation.
-
-The card auto-detects every canteen you have configured via `integration_entities('mensa_ka')`, so it works unchanged for one canteen or ten — there is no entity id to edit, and nothing to duplicate when you add or remove a canteen in the integration options.
+A Markdown-only fallback (no custom card, at the cost of a plainer layout since the sanitizer strips inline styles) is available in [examples/dashboard/mensa_dashboard.yaml](examples/dashboard/mensa_dashboard.yaml). It auto-detects every canteen you have configured via `integration_entities('mensa_ka')`, so it works unchanged for one canteen or ten — there is no entity id to edit, and nothing to duplicate when you add or remove a canteen in the integration options.
 
 ## Manual QA Checklist
 
@@ -81,13 +95,12 @@ For manual verification of the sensor implementation:
 2. Open `http://localhost:8123`.
 3. Verify that the integration now exposes a sensor entity in addition to the calendar entity.
 4. Inspect the sensor attributes in Developer Tools and confirm that `day` and `lines` are populated as expected.
-5. Paste the example Markdown card into a test dashboard.
+5. Add a `custom:mensa-ka-card` card for the sensor entity and confirm it renders without adding a Lovelace resource manually, then paste the example Markdown card into a test dashboard as a comparison.
 6. Compare the resulting presentation with the current calendar-based popup and confirm that the sensor-based layout is easier to scan.
 
 ## Roadmap
 
-- Improved dashboard examples and Lovelace presets for the sensor-based view
-- Dedicated Lovelace custom card for a richer native MensaApp-like frontend
+- Visual card editor (`getConfigElement`) for `mensa-ka-card`, instead of YAML-only configuration
 - Meal ratings once the upstream API key process is clarified
 - Inclusion in [home-assistant/brands](https://github.com/home-assistant/brands) for a dedicated icon
 

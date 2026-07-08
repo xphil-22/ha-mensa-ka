@@ -17,6 +17,12 @@ MAX_FORECAST_DAYS = 30
 
 PLATFORMS = [Platform.CALENDAR, Platform.SENSOR]
 
+# Served via `_async_register_frontend_card` in __init__.py. Bump CARD_VERSION
+# whenever www/mensa-ka-card.js changes so browsers don't keep a stale cached
+# copy of the module.
+CARD_URL_PATH = "/mensa_ka-card/mensa-ka-card.js"
+CARD_VERSION = "1"
+
 # Labels are taken verbatim (only shortened) from the descriptions the API itself
 # returns for these enum values, to avoid mistranslating allergen-relevant data.
 # The two-/three-letter code is kept alongside the label so it can be cross-checked

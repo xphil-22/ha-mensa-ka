@@ -1,12 +1,21 @@
 """End-to-end test of setting up a config entry: coordinator + entities."""
 
 import aiohttp
+from homeassistant.components.frontend import DATA_EXTRA_MODULE_URL
 from homeassistant.config_entries import ConfigEntryState
 from homeassistant.core import HomeAssistant
+from homeassistant.setup import async_setup_component
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 from pytest_homeassistant_custom_component.test_util.aiohttp import AiohttpClientMockResponse
 
-from custom_components.mensa_ka.const import API_URL, CONF_CANTEENS, CONF_FORECAST_DAYS, DOMAIN
+from custom_components.mensa_ka.const import (
+    API_URL,
+    CARD_URL_PATH,
+    CARD_VERSION,
+    CONF_CANTEENS,
+    CONF_FORECAST_DAYS,
+    DOMAIN,
+)
 
 CANTEENS_RESPONSE = {
     "data": {
@@ -54,6 +63,22 @@ async def test_setup_entry_creates_calendar_and_sensor_per_canteen(
     # Only the configured canteen gets entities.
     assert hass.states.get("calendar.mensa_moltke") is None
     assert hass.states.get("sensor.mensa_moltke_meal_plan") is None
+
+
+async def test_setup_entry_registers_lovelace_card(hass: HomeAssistant, aioclient_mock):
+    _mock_api(aioclient_mock)
+    assert await async_setup_component(hass, "http", {})
+    # Avoids depending on the (large, separately packaged) home-assistant-frontend
+    # component just to exercise add_extra_js_url's storage.
+    hass.data[DATA_EXTRA_MODULE_URL] = set()
+
+    entry = MockConfigEntry(domain=DOMAIN, data={CONF_CANTEENS: ["aaa"]})
+    entry.add_to_hass(hass)
+
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+
+    assert f"{CARD_URL_PATH}?v={CARD_VERSION}" in hass.data[DATA_EXTRA_MODULE_URL]
 
 
 async def test_setup_entry_not_ready_when_api_unreachable(hass: HomeAssistant, aioclient_mock):

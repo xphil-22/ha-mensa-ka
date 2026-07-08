@@ -1,0 +1,12 @@
+title: Karlsruher Mensen
+path: karlsruher-mensen
+icon: mdi:silverware-fork-knife
+cards:
+  # mensa-ka-card is registered automatically by the integration - no Lovelace
+  # resource to add under Settings -> Dashboards -> Resources. Add one card
+  # per canteen sensor; there is no auto-detecting variant of this card since
+  # each card is placed and ordered individually, like any other native card.
+  - type: custom:mensa-ka-card
+    entity: sensor.mensa_adenauerring_meal_plan
+  - type: custom:mensa-ka-card
+    entity: sensor.mensa_moltke_meal_plan
