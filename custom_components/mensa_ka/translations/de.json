@@ -1,0 +1,39 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "KIT Mensa",
+        "description": "Wähle aus, welche Mensen/Cafeterien du beobachten möchtest.",
+        "data": {
+          "canteens": "Mensen",
+          "forecast_days": "Anzahl Tage im Voraus"
+        }
+      }
+    },
+    "error": {
+      "no_canteens_selected": "Bitte mindestens eine Mensa auswählen."
+    },
+    "abort": {
+      "already_configured": "KIT Mensa ist bereits eingerichtet. Nutze die Optionen, um die beobachteten Mensen zu ändern.",
+      "cannot_connect": "Die KIT-Mensa-API konnte nicht erreicht werden. Bitte später erneut versuchen."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "KIT Mensa",
+        "description": "Wähle aus, welche Mensen/Cafeterien du beobachten möchtest.",
+        "data": {
+          "canteens": "Mensen",
+          "forecast_days": "Anzahl Tage im Voraus"
+        }
+      }
+    },
+    "error": {
+      "no_canteens_selected": "Bitte mindestens eine Mensa auswählen."
+    },
+    "abort": {
+      "cannot_connect": "Die KIT-Mensa-API konnte nicht erreicht werden. Bitte später erneut versuchen."
+    }
+  }
+}
