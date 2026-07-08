@@ -64,10 +64,12 @@ def _format_description(meal_day: MealDay) -> str:
 def _build_event(canteen_name: str, meal_day: MealDay) -> CalendarEvent | None:
     if not meal_day.meals:
         return None
+    meal_count = len(meal_day.meals)
+    meal_label = "meal" if meal_count == 1 else "meals"
     return CalendarEvent(
         start=meal_day.day,
         end=meal_day.day,
-        summary=f"{canteen_name} ({len(meal_day.meals)} Gerichte)",
+        summary=f"{canteen_name} ({meal_count} {meal_label})",
         description=_format_description(meal_day),
     )
 
