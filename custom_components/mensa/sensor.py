@@ -42,16 +42,20 @@ def _food_type_icon(meal_type: str) -> str:
     return FOOD_TYPE_ICONS["default"]
 
 
+def _price_in_euro(cents: int | None) -> float | None:
+    return None if cents is None else cents / 100
+
+
 def _meal_to_attr(meal: Meal) -> dict:
     """Convert a meal into stable sensor attributes."""
     return {
         "name": meal.name,
         "diet_label": FOOD_TYPE_LABELS.get(meal.meal_type, FOOD_TYPE_LABELS["UNKNOWN"]),
         "diet_icon": _food_type_icon(meal.meal_type),
-        "price_student": meal.price.student / 100,
-        "price_employee": meal.price.employee / 100,
-        "price_guest": meal.price.guest / 100,
-        "price_pupil": meal.price.pupil / 100,
+        "price_student": _price_in_euro(meal.price.student),
+        "price_employee": _price_in_euro(meal.price.employee),
+        "price_guest": _price_in_euro(meal.price.guest),
+        "price_pupil": _price_in_euro(meal.price.pupil),
         "allergens": [
             ALLERGEN_LABELS[allergen]
             for allergen in meal.allergens
@@ -62,6 +66,7 @@ def _meal_to_attr(meal: Meal) -> dict:
             for additive in meal.additives
             if additive in ADDITIVE_LABELS
         ],
+        "notes": meal.notes,
         "image_url": meal.images[0] if meal.images else None,
         "images": meal.images,
     }

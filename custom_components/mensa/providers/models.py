@@ -16,12 +16,16 @@ class Canteen:
 
 @dataclass
 class Price:
-    """Price of a meal per price group, in cents."""
+    """Price of a meal per price group, in cents.
 
-    student: int
-    employee: int
-    guest: int
-    pupil: int
+    A price group is `None` when a provider doesn't report it at all (e.g.
+    OpenMensa feeds frequently omit employee/pupil/guest prices).
+    """
+
+    student: int | None
+    employee: int | None
+    guest: int | None
+    pupil: int | None
 
 
 @dataclass
@@ -36,6 +40,9 @@ class Meal:
     allergens: list[str]
     additives: list[str]
     images: list[str]
+    # Free-text notes from providers without a discrete allergen/additive
+    # vocabulary (e.g. OpenMensa). Empty for providers that report codes.
+    notes: list[str] = field(default_factory=list)
 
 
 @dataclass

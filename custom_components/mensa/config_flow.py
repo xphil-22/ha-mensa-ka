@@ -25,12 +25,30 @@ from .providers import PROVIDERS, Canteen, MensaApiError
 
 _LOGGER = logging.getLogger(__name__)
 
+# Internal to the flow, not persisted on the entry - only used to narrow the
+# canteen picker for providers with a catalog too large for a plain
+# multi-select (see `Provider.requires_search`).
+_CONF_SEARCH = "search"
+
 
 async def _async_fetch_canteen_choices(hass: Any, provider_key: str) -> dict[str, str]:
     """Return a mapping of canteen id to display name, sorted by name."""
     session = async_get_clientsession(hass)
     canteens: list[Canteen] = await PROVIDERS[provider_key].async_get_canteens(session)
     return dict(sorted(((c.id, c.name) for c in canteens), key=lambda item: item[1]))
+
+
+def _filter_choices(choices: dict[str, str], search: str) -> dict[str, str]:
+    """Narrow choices to those matching `search` (case-insensitive substring).
+
+    Falls back to the full, unfiltered set if nothing matches, rather than
+    handing the canteens step an empty picker.
+    """
+    if not search:
+        return choices
+    needle = search.casefold()
+    filtered = {cid: name for cid, name in choices.items() if needle in name.casefold()}
+    return filtered or choices
 
 
 def _provider_schema() -> vol.Schema:
@@ -41,6 +59,10 @@ def _provider_schema() -> vol.Schema:
             )
         }
     )
+
+
+def _search_schema() -> vol.Schema:
+    return vol.Schema({vol.Optional(_CONF_SEARCH, default=""): cv.string})
 
 
 def _canteens_schema(choices: dict[str, str], defaults: list[str]) -> vol.Schema:
@@ -70,6 +92,7 @@ class MensaConfigFlow(ConfigFlow, domain=DOMAIN):
 
     def __init__(self) -> None:
         self._provider_key: str | None = None
+        self._search: str = ""
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -77,9 +100,21 @@ class MensaConfigFlow(ConfigFlow, domain=DOMAIN):
         """Let the user pick a data source."""
         if user_input is not None:
             self._provider_key = user_input[CONF_PROVIDER]
+            if PROVIDERS[self._provider_key].requires_search:
+                return await self.async_step_search()
             return await self.async_step_canteens()
 
         return self.async_show_form(step_id="user", data_schema=_provider_schema())
+
+    async def async_step_search(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Let the user narrow down a large canteen catalog before picking one."""
+        if user_input is not None:
+            self._search = user_input[_CONF_SEARCH]
+            return await self.async_step_canteens()
+
+        return self.async_show_form(step_id="search", data_schema=_search_schema())
 
     async def async_step_canteens(
         self, user_input: dict[str, Any] | None = None
@@ -94,6 +129,8 @@ class MensaConfigFlow(ConfigFlow, domain=DOMAIN):
         except MensaApiError:
             _LOGGER.exception("Failed to fetch canteens from %s", provider.display_name)
             return self.async_abort(reason="cannot_connect")
+
+        choices = _filter_choices(choices, self._search)
 
         if user_input is not None:
             if not user_input[CONF_CANTEENS]:
@@ -117,7 +154,14 @@ class MensaConfigFlow(ConfigFlow, domain=DOMAIN):
 
 
 class MensaOptionsFlow(OptionsFlow):
-    """Allow changing the tracked canteens and forecast window after setup."""
+    """Allow changing the tracked canteens and forecast window after setup.
+
+    Unlike the initial setup flow, this doesn't insert a search step for
+    large-catalog providers (`requires_search`) - the picker shows the full,
+    unfiltered catalog when adjusting an existing OpenMensa entry. Known
+    limitation, acceptable for now since the initial pick already narrows
+    down the relevant canteens.
+    """
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None

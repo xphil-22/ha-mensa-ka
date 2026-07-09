@@ -108,6 +108,7 @@ class KarlsruheProvider:
     """Meal plans for Studierendenwerk Karlsruhe canteens, via api.mensa-ka.de."""
 
     display_name = "Studierendenwerk Karlsruhe"
+    requires_search = False
 
     async def async_get_canteens(self, session: aiohttp.ClientSession) -> list[Canteen]:
         """Fetch the list of all available canteens."""

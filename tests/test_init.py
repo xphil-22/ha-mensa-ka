@@ -17,6 +17,7 @@ from custom_components.mensa.const import (
     DOMAIN,
 )
 from custom_components.mensa.providers.karlsruhe import API_URL
+from custom_components.mensa.providers.openmensa import API_BASE as OPENMENSA_API_BASE
 
 CANTEENS_RESPONSE = {
     "data": {
@@ -65,6 +66,34 @@ async def test_setup_entry_creates_calendar_and_sensor_per_canteen(
     # Only the configured canteen gets entities.
     assert hass.states.get("calendar.mensa_moltke") is None
     assert hass.states.get("sensor.mensa_moltke_meal_plan") is None
+
+
+async def test_setup_entry_creates_entities_for_openmensa_provider(
+    hass: HomeAssistant, aioclient_mock
+):
+    """The provider abstraction must work end-to-end for a second provider too."""
+    aioclient_mock.get(
+        f"{OPENMENSA_API_BASE}/canteens",
+        params={"page": 1},
+        json=[{"id": 1, "name": "Mensa Adenauerring", "city": "Karlsruhe"}],
+        headers={"X-Total-Pages": "1"},
+    )
+    aioclient_mock.get(f"{OPENMENSA_API_BASE}/canteens/1/days", json=[])
+
+    entry = MockConfigEntry(
+        domain=DOMAIN,
+        data={CONF_PROVIDER: "openmensa", CONF_CANTEENS: ["1"], CONF_FORECAST_DAYS: 3},
+    )
+    entry.add_to_hass(hass)
+
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+
+    assert entry.state is ConfigEntryState.LOADED
+    calendar_state = hass.states.get("calendar.mensa_adenauerring_karlsruhe")
+    sensor_state = hass.states.get("sensor.mensa_adenauerring_karlsruhe_meal_plan")
+    assert calendar_state is not None
+    assert sensor_state is not None
 
 
 async def test_setup_entry_registers_lovelace_card(hass: HomeAssistant, aioclient_mock):

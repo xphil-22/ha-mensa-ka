@@ -7,6 +7,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
+from custom_components.mensa.config_flow import _filter_choices
 from custom_components.mensa.const import CONF_CANTEENS, CONF_FORECAST_DAYS, CONF_PROVIDER, DOMAIN
 from custom_components.mensa.providers.base import MensaApiError
 from custom_components.mensa.providers.models import Canteen
@@ -17,6 +18,9 @@ FAKE_CANTEENS = [
 ]
 
 _PATCH_TARGET = "custom_components.mensa.providers.karlsruhe.KarlsruheProvider.async_get_canteens"
+_OPENMENSA_PATCH_TARGET = (
+    "custom_components.mensa.providers.openmensa.OpenMensaProvider.async_get_canteens"
+)
 
 
 async def _start_canteens_step(hass: HomeAssistant):
@@ -85,6 +89,40 @@ async def test_user_flow_allows_multiple_entries(hass: HomeAssistant):
         )
 
     assert result["type"] is FlowResultType.CREATE_ENTRY
+
+
+async def test_user_flow_inserts_search_step_for_large_catalog_providers(hass: HomeAssistant):
+    with patch(_OPENMENSA_PATCH_TARGET, return_value=FAKE_CANTEENS):
+        result = await hass.config_entries.flow.async_init(
+            DOMAIN, context={"source": config_entries.SOURCE_USER}
+        )
+        result = await hass.config_entries.flow.async_configure(
+            result["flow_id"], {CONF_PROVIDER: "openmensa"}
+        )
+        assert result["type"] is FlowResultType.FORM
+        assert result["step_id"] == "search"
+
+        result = await hass.config_entries.flow.async_configure(
+            result["flow_id"], {"search": "adenauerring"}
+        )
+
+    assert result["type"] is FlowResultType.FORM
+    assert result["step_id"] == "canteens"
+
+
+def test_filter_choices_matches_substring_case_insensitively():
+    choices = {"1": "Mensa Adenauerring (Karlsruhe)", "2": "Mensa Rempartstraße (Freiburg)"}
+    assert _filter_choices(choices, "freiburg") == {"2": "Mensa Rempartstraße (Freiburg)"}
+
+
+def test_filter_choices_falls_back_to_full_set_when_nothing_matches():
+    choices = {"1": "Mensa Adenauerring (Karlsruhe)"}
+    assert _filter_choices(choices, "nonexistent city") == choices
+
+
+def test_filter_choices_returns_everything_for_empty_search():
+    choices = {"1": "Mensa Adenauerring (Karlsruhe)"}
+    assert _filter_choices(choices, "") == choices
 
 
 async def test_options_flow_updates_canteens(hass: HomeAssistant):

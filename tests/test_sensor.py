@@ -14,13 +14,14 @@ def _meal(
     name: str,
     line_name: str,
     meal_type: str = "VEGAN",
-    student: int = 360,
-    employee: int = 460,
-    guest: int = 520,
-    pupil: int = 400,
+    student: int | None = 360,
+    employee: int | None = 460,
+    guest: int | None = 520,
+    pupil: int | None = 400,
     allergens: list[str] | None = None,
     additives: list[str] | None = None,
     images: list[str] | None = None,
+    notes: list[str] | None = None,
 ) -> Meal:
     return Meal(
         id=meal_id,
@@ -36,6 +37,7 @@ def _meal(
         allergens=allergens or [],
         additives=additives or [],
         images=images or [],
+        notes=notes or [],
     )
 
 
@@ -60,9 +62,31 @@ def test_meal_to_attr_resolves_labels_icons_prices_and_annotations():
         "price_pupil": 4.0,
         "allergens": ["Soya", "Wheat / gluten"],
         "additives": ["Phosphate"],
+        "notes": [],
         "image_url": "https://api.mensa-ka.de/image/example.jpg",
         "images": ["https://api.mensa-ka.de/image/example.jpg"],
     }
+
+
+def test_meal_to_attr_handles_missing_price_tiers_and_free_text_notes():
+    meal = _meal(
+        meal_id="m4",
+        name="Gelbes Linsen-Kokos-Curry",
+        line_name="Linie 2 Vegane Linie",
+        meal_type="UNKNOWN",
+        student=380,
+        employee=None,
+        guest=None,
+        pupil=None,
+        notes=["Sellerie", "vegan"],
+    )
+
+    attrs = _meal_to_attr(meal)
+    assert attrs["price_student"] == 3.8
+    assert attrs["price_employee"] is None
+    assert attrs["price_guest"] is None
+    assert attrs["price_pupil"] is None
+    assert attrs["notes"] == ["Sellerie", "vegan"]
 
 
 def test_meal_to_attr_uses_default_icon_and_unknown_label_for_unmapped_food_type():
@@ -125,6 +149,7 @@ def test_group_by_line_groups_meals_in_line_structure():
                     "price_pupil": 4.0,
                     "allergens": [],
                     "additives": [],
+                    "notes": [],
                     "image_url": "https://api.mensa-ka.de/image/chili.jpg",
                     "images": ["https://api.mensa-ka.de/image/chili.jpg"],
                 },
@@ -138,6 +163,7 @@ def test_group_by_line_groups_meals_in_line_structure():
                     "price_pupil": 3.7,
                     "allergens": [],
                     "additives": [],
+                    "notes": [],
                     "image_url": None,
                     "images": [],
                 },
@@ -156,6 +182,7 @@ def test_group_by_line_groups_meals_in_line_structure():
                     "price_pupil": 4.0,
                     "allergens": ["Eggs"],
                     "additives": ["May contain alcohol"],
+                    "notes": [],
                     "image_url": None,
                     "images": [],
                 }

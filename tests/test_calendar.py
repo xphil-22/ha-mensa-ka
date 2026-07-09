@@ -45,3 +45,23 @@ def test_format_description_groups_by_line_and_includes_labels():
     assert "Soya" in description
     assert "Wheat / gluten" in description
     assert "Phosphate" in description
+
+
+def test_format_description_omits_price_and_includes_notes_when_student_price_missing():
+    meal = Meal(
+        id="m2",
+        name="Gelbes Linsen-Kokos-Curry",
+        line_name="Linie 2 Vegane Linie",
+        meal_type="UNKNOWN",
+        price=Price(student=None, employee=None, guest=None, pupil=None),
+        allergens=[],
+        additives=[],
+        images=[],
+        notes=["Sellerie", "vegan"],
+    )
+    meal_day = MealDay(day=date(2026, 7, 8), meals=[meal])
+    description = _format_description(meal_day)
+
+    assert "€" not in description
+    assert "Sellerie" in description
+    assert "vegan" in description

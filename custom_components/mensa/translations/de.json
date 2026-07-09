@@ -8,6 +8,13 @@
           "provider": "Datenquelle"
         }
       },
+      "search": {
+        "title": "Mensen suchen",
+        "description": "Diese Datenquelle hat einen sehr großen Katalog. Gib eine Stadt oder einen Mensa-Namen ein, um die Auswahl einzuschränken (optional).",
+        "data": {
+          "search": "Stadt oder Mensa-Name"
+        }
+      },
       "canteens": {
         "title": "Mensen auswählen",
         "description": "Wähle die Mensen/Cafeterien aus, die du verfolgen möchtest.",

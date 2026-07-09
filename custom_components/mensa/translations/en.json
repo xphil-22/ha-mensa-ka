@@ -8,6 +8,13 @@
           "provider": "Data source"
         }
       },
+      "search": {
+        "title": "Search canteens",
+        "description": "This data source has a large catalog. Enter a city or canteen name to narrow it down (optional).",
+        "data": {
+          "search": "City or canteen name"
+        }
+      },
       "canteens": {
         "title": "Select canteens",
         "description": "Select which canteens/cafeterias you want to track.",

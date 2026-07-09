@@ -6,7 +6,7 @@
 
 Home Assistant integration for canteen meal plans, built around a **provider abstraction**: each supported data source is one provider, and adding support for another university or cafeteria network means adding one provider, not rewriting the integration.
 
-The first (and currently only) provider covers the canteens and cafeterias operated by **Studierendenwerk Karlsruhe** (KIT, Hochschule für Musik, and other Karlsruhe/Pforzheim locations), via the public GraphQL API from [kronos-et-al/MensaApp](https://github.com/kronos-et-al/MensaApp) (`api.mensa-ka.de`).
+Two providers are currently supported: **Studierendenwerk Karlsruhe** (KIT, Hochschule für Musik, and other Karlsruhe/Pforzheim locations), via the public GraphQL API from [kronos-et-al/MensaApp](https://github.com/kronos-et-al/MensaApp) (`api.mensa-ka.de`); and **OpenMensa**, a community-run aggregator covering roughly 1300 German canteens with varying data quality (see [Providers](#providers) below).
 
 > [!NOTE]
 > This project was previously published as `ha-mensa-ka`, Karlsruhe-only. See [MIGRATION.md](MIGRATION.md) if you're upgrading from that version — it's a breaking change.
@@ -29,11 +29,14 @@ The integration exposes an additional **sensor entity** per canteen as the prima
 
 ## Providers
 
-| Provider | Data source | Coverage |
-| --- | --- | --- |
-| Studierendenwerk Karlsruhe | `api.mensa-ka.de` (GraphQL) | KIT, Hochschule für Musik, other Karlsruhe/Pforzheim locations |
+| Provider | Data source | Coverage | Data quality |
+| --- | --- | --- | --- |
+| Studierendenwerk Karlsruhe | `api.mensa-ka.de` (GraphQL) | KIT, Hochschule für Musik, other Karlsruhe/Pforzheim locations | Images, discrete allergen/additive codes, all 4 price tiers |
+| OpenMensa | `openmensa.org` (REST, community-maintained) | ~1300 German canteens | No images, no discrete allergen codes (free-text notes instead), non-student price tiers often missing; some feeds are stale — the integration detects and logs this per canteen rather than failing setup |
 
-More providers (e.g. other universities or aggregators) can be added without touching the config flow, coordinator, or entity platforms — see [CONTRIBUTING.md](CONTRIBUTING.md).
+Providers with a large catalog (currently only OpenMensa) get an extra "search" step in the config flow to narrow the canteen picker down by city or name before showing the list, since a plain dropdown of ~1300 entries isn't usable.
+
+More providers (e.g. other universities) can be added without touching the config flow, coordinator, or entity platforms — see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Scope (v1)
 
@@ -114,7 +117,8 @@ For manual verification of the sensor implementation:
 
 ## Roadmap
 
-- Additional providers (e.g. OpenMensa as a broader-coverage, community-fed source)
+- Additional providers for universities with their own official APIs (e.g. OstNiedersachsen, Dresden — pending a data-quality spike like the one already done for OpenMensa)
+- Search step for the options flow too, so adjusting an existing OpenMensa entry doesn't show the full unfiltered catalog
 - Visual card editor (`getConfigElement`) for `mensa-card`, instead of YAML-only configuration
 - Meal ratings once the upstream API key process is clarified
 - Inclusion in [home-assistant/brands](https://github.com/home-assistant/brands) for a dedicated icon

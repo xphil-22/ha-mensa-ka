@@ -26,6 +26,11 @@ class Provider(Protocol):
 
     display_name: str
 
+    # Set for providers whose canteen catalog is too large for a plain
+    # multi-select (e.g. OpenMensa's ~1300 canteens): the config flow inserts
+    # an extra text-filter step before the canteen picker.
+    requires_search: bool = False
+
     async def async_get_canteens(self, session: aiohttp.ClientSession) -> list[Canteen]:
         """Fetch the list of all available canteens."""
         ...

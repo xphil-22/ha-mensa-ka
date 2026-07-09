@@ -41,11 +41,13 @@ async def async_setup_entry(
 
 
 def _format_meal(meal: Meal) -> str:
-    parts = [f"- **{meal.name}** ({meal.price.student / 100:.2f} €)"]
+    price = f" ({meal.price.student / 100:.2f} €)" if meal.price.student is not None else ""
+    parts = [f"- **{meal.name}**{price}"]
     food_type = FOOD_TYPE_LABELS.get(meal.meal_type, meal.meal_type)
     tags = [food_type]
     tags.extend(ALLERGEN_LABELS.get(a, a) for a in meal.allergens)
     tags.extend(ADDITIVE_LABELS.get(a, a) for a in meal.additives)
+    tags.extend(meal.notes)
     if tags:
         parts.append(f"  {', '.join(tags)}")
     return "\n".join(parts)
