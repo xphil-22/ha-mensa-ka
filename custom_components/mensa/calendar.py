@@ -1,4 +1,4 @@
-"""Calendar platform for the Karlsruher Mensen integration.
+"""Calendar platform for the Mensa integration.
 
 Each configured canteen gets one calendar entity with one all-day event per
 day it serves meals. The event description lists every meal offered that
@@ -18,9 +18,9 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util import dt as dt_util
 
-from .api import Meal, MealDay
 from .const import ADDITIVE_LABELS, ALLERGEN_LABELS, DOMAIN, FOOD_TYPE_LABELS
-from .coordinator import MensaConfigEntry, MensaKaCoordinator, pick_current_meal_day
+from .coordinator import MensaConfigEntry, MensaCoordinator, pick_current_meal_day
+from .providers.models import Meal, MealDay
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -33,7 +33,9 @@ async def async_setup_entry(
     """Set up one calendar entity per configured canteen."""
     runtime_data = entry.runtime_data
     async_add_entities(
-        MensaKaCalendar(runtime_data.coordinator, canteen_id, canteen_name)
+        MensaCalendar(
+            runtime_data.coordinator, canteen_id, canteen_name, runtime_data.provider_name
+        )
         for canteen_id, canteen_name in runtime_data.canteen_names.items()
     )
 
@@ -74,14 +76,18 @@ def _build_event(canteen_name: str, meal_day: MealDay) -> CalendarEvent | None:
     )
 
 
-class MensaKaCalendar(CoordinatorEntity[MensaKaCoordinator], CalendarEntity):
+class MensaCalendar(CoordinatorEntity[MensaCoordinator], CalendarEntity):
     """Calendar entity exposing the meal plan of a single canteen."""
 
     _attr_has_entity_name = True
     _attr_name = None
 
     def __init__(
-        self, coordinator: MensaKaCoordinator, canteen_id: str, canteen_name: str
+        self,
+        coordinator: MensaCoordinator,
+        canteen_id: str,
+        canteen_name: str,
+        provider_name: str,
     ) -> None:
         super().__init__(coordinator)
         self._canteen_id = canteen_id
@@ -90,7 +96,7 @@ class MensaKaCalendar(CoordinatorEntity[MensaKaCoordinator], CalendarEntity):
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, canteen_id)},
             name=canteen_name,
-            manufacturer="Studierendenwerk Karlsruhe",
+            manufacturer=provider_name,
             entry_type=DeviceEntryType.SERVICE,
         )
 

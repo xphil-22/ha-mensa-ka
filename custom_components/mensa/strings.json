@@ -2,7 +2,14 @@
   "config": {
     "step": {
       "user": {
-        "title": "Karlsruher Mensen",
+        "title": "Mensa",
+        "description": "Select a data source.",
+        "data": {
+          "provider": "Data source"
+        }
+      },
+      "canteens": {
+        "title": "Select canteens",
         "description": "Select which canteens/cafeterias you want to track.",
         "data": {
           "canteens": "Canteens",
@@ -14,14 +21,13 @@
       "no_canteens_selected": "Select at least one canteen."
     },
     "abort": {
-      "already_configured": "Karlsruher Mensen is already configured. Use the options to change the tracked canteens.",
-      "cannot_connect": "Could not reach the Karlsruher Mensen API. Please try again later."
+      "cannot_connect": "Could not reach the selected data source. Please try again later."
     }
   },
   "options": {
     "step": {
       "init": {
-        "title": "Karlsruher Mensen",
+        "title": "Mensa",
         "description": "Select which canteens/cafeterias you want to track.",
         "data": {
           "canteens": "Canteens",
@@ -33,7 +39,7 @@
       "no_canteens_selected": "Select at least one canteen."
     },
     "abort": {
-      "cannot_connect": "Could not reach the Karlsruher Mensen API. Please try again later."
+      "cannot_connect": "Could not reach the selected data source. Please try again later."
     }
   }
 }

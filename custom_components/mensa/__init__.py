@@ -1,4 +1,4 @@
-"""The Karlsruher Mensen integration."""
+"""The Mensa integration."""
 
 from __future__ import annotations
 
@@ -11,13 +11,20 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-from .api import MensaApiError, async_get_canteens
-from .const import CARD_URL_PATH, CARD_VERSION, DEFAULT_UPDATE_INTERVAL, DOMAIN, PLATFORMS
-from .coordinator import MensaConfigEntry, MensaKaCoordinator, MensaRuntimeData
+from .const import (
+    CARD_URL_PATH,
+    CARD_VERSION,
+    CONF_PROVIDER,
+    DEFAULT_UPDATE_INTERVAL,
+    DOMAIN,
+    PLATFORMS,
+)
+from .coordinator import MensaConfigEntry, MensaCoordinator, MensaRuntimeData
+from .providers import PROVIDERS, MensaApiError
 
 _LOGGER = logging.getLogger(__name__)
 
-CARD_JS_PATH = Path(__file__).parent / "www" / "mensa-ka-card.js"
+CARD_JS_PATH = Path(__file__).parent / "www" / "mensa-card.js"
 _CARD_REGISTERED_KEY = f"{DOMAIN}_card_registered"
 
 
@@ -43,16 +50,17 @@ async def _async_register_frontend_card(hass: HomeAssistant) -> None:
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: MensaConfigEntry) -> bool:
-    """Set up the Karlsruher Mensen integration from a config entry."""
+    """Set up the Mensa integration from a config entry."""
     await _async_register_frontend_card(hass)
 
+    provider = PROVIDERS[entry.data[CONF_PROVIDER]]
     session = async_get_clientsession(hass)
     try:
-        canteens = await async_get_canteens(session)
+        canteens = await provider.async_get_canteens(session)
     except MensaApiError as err:
         raise ConfigEntryNotReady(str(err)) from err
 
-    coordinator = MensaKaCoordinator(hass, entry, DEFAULT_UPDATE_INTERVAL)
+    coordinator = MensaCoordinator(hass, entry, provider, DEFAULT_UPDATE_INTERVAL)
     await coordinator.async_config_entry_first_refresh()
 
     entry.runtime_data = MensaRuntimeData(
@@ -62,6 +70,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: MensaConfigEntry) -> boo
             for canteen in canteens
             if canteen.id in coordinator.canteen_ids
         },
+        provider_name=provider.display_name,
     )
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)

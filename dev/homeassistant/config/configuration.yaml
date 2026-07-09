@@ -1,7 +1,7 @@
 default_config:
 
 homeassistant:
-  name: HA Mensa KA Dev
+  name: HA Mensa Dev
   latitude: 49.0069
   longitude: 8.4037
   elevation: 115
@@ -21,4 +21,4 @@ homeassistant:
 logger:
   default: info
   logs:
-    custom_components.mensa_ka: debug
+    custom_components.mensa: debug

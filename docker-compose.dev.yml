@@ -1,7 +1,7 @@
 services:
   homeassistant:
     image: ghcr.io/home-assistant/home-assistant:stable
-    container_name: ha-mensa-ka-dev
+    container_name: ha-mensa-dev
     restart: unless-stopped
     ports:
       - "8123:8123"
@@ -9,4 +9,4 @@ services:
       TZ: Europe/Berlin
     volumes:
       - ./dev/homeassistant/config:/config
-      - ./custom_components/mensa_ka:/config/custom_components/mensa_ka:ro
+      - ./custom_components/mensa:/config/custom_components/mensa:ro

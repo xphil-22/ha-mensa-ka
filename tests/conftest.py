@@ -1,4 +1,4 @@
-"""Fixtures for the Karlsruher Mensen integration tests."""
+"""Fixtures for the Mensa integration tests."""
 
 import pycares
 import pytest

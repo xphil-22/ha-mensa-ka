@@ -1,4 +1,4 @@
-"""Data update coordinator for the Karlsruher Mensen integration."""
+"""Data update coordinator for the Mensa integration."""
 
 from __future__ import annotations
 
@@ -12,8 +12,9 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.util import dt as dt_util
 
-from .api import MealDay, MensaApiError, async_get_meal_plans
 from .const import CONF_CANTEENS, CONF_FORECAST_DAYS, DEFAULT_FORECAST_DAYS, DOMAIN
+from .providers.base import MensaApiError, Provider
+from .providers.models import MealDay
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -35,17 +36,19 @@ def pick_current_meal_day(meal_days: list[MealDay]) -> MealDay | None:
     return None
 
 
-class MensaKaCoordinator(DataUpdateCoordinator[dict[str, list[MealDay]]]):
+class MensaCoordinator(DataUpdateCoordinator[dict[str, list[MealDay]]]):
     """Fetches the meal plan of all configured canteens on a schedule."""
 
     def __init__(
         self,
         hass: HomeAssistant,
         entry: ConfigEntry,
+        provider: Provider,
         update_interval: timedelta,
     ) -> None:
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=update_interval)
         self._entry = entry
+        self._provider = provider
         self._session = async_get_clientsession(hass)
 
     @property
@@ -66,7 +69,7 @@ class MensaKaCoordinator(DataUpdateCoordinator[dict[str, list[MealDay]]]):
         days = [today + timedelta(days=offset) for offset in range(self.forecast_days)]
 
         try:
-            return await async_get_meal_plans(self._session, canteen_ids, days)
+            return await self._provider.async_get_meal_plans(self._session, canteen_ids, days)
         except MensaApiError as err:
             raise UpdateFailed(str(err)) from err
 
@@ -75,8 +78,9 @@ class MensaKaCoordinator(DataUpdateCoordinator[dict[str, list[MealDay]]]):
 class MensaRuntimeData:
     """Data stored on the config entry at runtime."""
 
-    coordinator: MensaKaCoordinator
+    coordinator: MensaCoordinator
     canteen_names: dict[str, str]
+    provider_name: str
 
 
 type MensaConfigEntry = ConfigEntry[MensaRuntimeData]

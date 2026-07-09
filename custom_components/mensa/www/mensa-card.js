@@ -1,5 +1,5 @@
 /**
- * Lovelace card for the Karlsruher Mensen integration.
+ * Lovelace card for the Mensa integration.
  *
  * Renders one canteen's meal plan (one card per `sensor.<canteen>_meal_plan`
  * entity) with real CSS - unlike a markdown card, whose sanitizer strips
@@ -129,7 +129,7 @@ const CARD_STYLE = `
   .chip.additive { background: var(--secondary-background-color); }
 `;
 
-class MensaKaCard extends HTMLElement {
+class MensaCard extends HTMLElement {
   constructor() {
     super();
     this._root = this.attachShadow({ mode: "open" });
@@ -138,7 +138,7 @@ class MensaKaCard extends HTMLElement {
 
   setConfig(config) {
     if (!config || !config.entity) {
-      throw new Error("Set 'entity' to a Karlsruher Mensen meal plan sensor.");
+      throw new Error("Set 'entity' to a Mensa meal plan sensor.");
     }
     this._config = config;
     this._lastRenderKey = null;
@@ -278,11 +278,11 @@ class MensaKaCard extends HTMLElement {
   }
 }
 
-customElements.define("mensa-ka-card", MensaKaCard);
+customElements.define("mensa-card", MensaCard);
 
 window.customCards = window.customCards || [];
 window.customCards.push({
-  type: "mensa-ka-card",
-  name: "Karlsruher Mensen",
-  description: "Meal plan card for one Karlsruher Mensen canteen sensor.",
+  type: "mensa-card",
+  name: "Mensa",
+  description: "Meal plan card for one Mensa canteen sensor.",
 });

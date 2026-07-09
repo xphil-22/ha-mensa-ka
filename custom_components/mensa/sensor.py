@@ -1,4 +1,4 @@
-"""Sensor platform for the Karlsruher Mensen integration."""
+"""Sensor platform for the Mensa integration."""
 
 from __future__ import annotations
 
@@ -9,7 +9,6 @@ from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .api import Meal, MealDay
 from .const import (
     ADDITIVE_LABELS,
     ALLERGEN_LABELS,
@@ -17,7 +16,8 @@ from .const import (
     FOOD_TYPE_ICONS,
     FOOD_TYPE_LABELS,
 )
-from .coordinator import MensaConfigEntry, MensaKaCoordinator, pick_current_meal_day
+from .coordinator import MensaConfigEntry, MensaCoordinator, pick_current_meal_day
+from .providers.models import Meal, MealDay
 
 
 async def async_setup_entry(
@@ -28,7 +28,7 @@ async def async_setup_entry(
     """Set up one meal plan sensor per configured canteen."""
     runtime_data = entry.runtime_data
     async_add_entities(
-        MensaKaSensor(runtime_data.coordinator, canteen_id, canteen_name)
+        MensaSensor(runtime_data.coordinator, canteen_id, canteen_name, runtime_data.provider_name)
         for canteen_id, canteen_name in runtime_data.canteen_names.items()
     )
 
@@ -78,7 +78,7 @@ def _group_by_line(meal_day: MealDay) -> list[dict]:
     ]
 
 
-class MensaKaSensor(CoordinatorEntity[MensaKaCoordinator], SensorEntity):
+class MensaSensor(CoordinatorEntity[MensaCoordinator], SensorEntity):
     """Sensor entity exposing the selected meal day of one canteen."""
 
     _attr_has_entity_name = True
@@ -86,7 +86,11 @@ class MensaKaSensor(CoordinatorEntity[MensaKaCoordinator], SensorEntity):
     _attr_native_unit_of_measurement = "meals"
 
     def __init__(
-        self, coordinator: MensaKaCoordinator, canteen_id: str, canteen_name: str
+        self,
+        coordinator: MensaCoordinator,
+        canteen_id: str,
+        canteen_name: str,
+        provider_name: str,
     ) -> None:
         super().__init__(coordinator)
         self._canteen_id = canteen_id
@@ -94,7 +98,7 @@ class MensaKaSensor(CoordinatorEntity[MensaKaCoordinator], SensorEntity):
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, canteen_id)},
             name=canteen_name,
-            manufacturer="Studierendenwerk Karlsruhe",
+            manufacturer=provider_name,
             entry_type=DeviceEntryType.SERVICE,
         )
 

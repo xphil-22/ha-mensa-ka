@@ -1,9 +1,9 @@
-"""Tests for custom_components.mensa_ka.calendar helper functions."""
+"""Tests for custom_components.mensa.calendar helper functions."""
 
 from datetime import date
 
-from custom_components.mensa_ka.api import Meal, MealDay, Price
-from custom_components.mensa_ka.calendar import _build_event, _format_description
+from custom_components.mensa.calendar import _build_event, _format_description
+from custom_components.mensa.providers.models import Meal, MealDay, Price
 
 MEAL = Meal(
     id="m1",

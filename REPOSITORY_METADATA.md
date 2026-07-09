@@ -2,7 +2,7 @@
 
 Suggested GitHub repository description:
 
-`Home Assistant custom integration for Karlsruher Mensen meal plans (Studierendenwerk Karlsruhe canteens).`
+`Home Assistant custom integration for canteen meal plans, starting with Studierendenwerk Karlsruhe (KIT and other Karlsruhe/Pforzheim locations).`
 
 Suggested GitHub topics:
 
@@ -18,4 +18,4 @@ Suggested GitHub topics:
 
 Suggested website URL:
 
-`https://github.com/xphil-22/ha-mensa-ka`
+`https://github.com/xphil-22/ha-mensa`

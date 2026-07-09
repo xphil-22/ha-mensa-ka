@@ -1,1 +1,1 @@
-"""Tests for the Karlsruher Mensen integration."""
+"""Tests for the Mensa integration."""

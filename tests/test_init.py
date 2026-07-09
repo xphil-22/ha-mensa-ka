@@ -8,14 +8,15 @@ from homeassistant.setup import async_setup_component
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 from pytest_homeassistant_custom_component.test_util.aiohttp import AiohttpClientMockResponse
 
-from custom_components.mensa_ka.const import (
-    API_URL,
+from custom_components.mensa.const import (
     CARD_URL_PATH,
     CARD_VERSION,
     CONF_CANTEENS,
     CONF_FORECAST_DAYS,
+    CONF_PROVIDER,
     DOMAIN,
 )
+from custom_components.mensa.providers.karlsruhe import API_URL
 
 CANTEENS_RESPONSE = {
     "data": {
@@ -49,7 +50,8 @@ async def test_setup_entry_creates_calendar_and_sensor_per_canteen(
     _mock_api(aioclient_mock)
 
     entry = MockConfigEntry(
-        domain=DOMAIN, data={CONF_CANTEENS: ["aaa"], CONF_FORECAST_DAYS: 3}
+        domain=DOMAIN,
+        data={CONF_PROVIDER: "karlsruhe", CONF_CANTEENS: ["aaa"], CONF_FORECAST_DAYS: 3},
     )
     entry.add_to_hass(hass)
 
@@ -72,7 +74,9 @@ async def test_setup_entry_registers_lovelace_card(hass: HomeAssistant, aioclien
     # component just to exercise add_extra_js_url's storage.
     hass.data[DATA_EXTRA_MODULE_URL] = set()
 
-    entry = MockConfigEntry(domain=DOMAIN, data={CONF_CANTEENS: ["aaa"]})
+    entry = MockConfigEntry(
+        domain=DOMAIN, data={CONF_PROVIDER: "karlsruhe", CONF_CANTEENS: ["aaa"]}
+    )
     entry.add_to_hass(hass)
 
     assert await hass.config_entries.async_setup(entry.entry_id)
@@ -84,7 +88,9 @@ async def test_setup_entry_registers_lovelace_card(hass: HomeAssistant, aioclien
 async def test_setup_entry_not_ready_when_api_unreachable(hass: HomeAssistant, aioclient_mock):
     aioclient_mock.post(API_URL, exc=aiohttp.ClientConnectionError("down"))
 
-    entry = MockConfigEntry(domain=DOMAIN, data={CONF_CANTEENS: ["aaa"]})
+    entry = MockConfigEntry(
+        domain=DOMAIN, data={CONF_PROVIDER: "karlsruhe", CONF_CANTEENS: ["aaa"]}
+    )
     entry.add_to_hass(hass)
 
     assert not await hass.config_entries.async_setup(entry.entry_id)
@@ -96,7 +102,9 @@ async def test_setup_entry_not_ready_when_api_unreachable(hass: HomeAssistant, a
 async def test_unload_entry(hass: HomeAssistant, aioclient_mock):
     _mock_api(aioclient_mock)
 
-    entry = MockConfigEntry(domain=DOMAIN, data={CONF_CANTEENS: ["aaa"]})
+    entry = MockConfigEntry(
+        domain=DOMAIN, data={CONF_PROVIDER: "karlsruhe", CONF_CANTEENS: ["aaa"]}
+    )
     entry.add_to_hass(hass)
 
     assert await hass.config_entries.async_setup(entry.entry_id)

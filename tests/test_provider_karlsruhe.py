@@ -1,4 +1,4 @@
-"""Tests for custom_components.mensa_ka.api."""
+"""Tests for custom_components.mensa.providers.karlsruhe."""
 
 from datetime import date
 
@@ -7,14 +7,11 @@ import pytest
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-from custom_components.mensa_ka.api import (
-    Canteen,
-    MealDay,
-    MensaApiError,
-    async_get_canteens,
-    async_get_meal_plans,
-)
-from custom_components.mensa_ka.const import API_URL
+from custom_components.mensa.providers.base import MensaApiError
+from custom_components.mensa.providers.karlsruhe import API_URL, KarlsruheProvider
+from custom_components.mensa.providers.models import Canteen, MealDay
+
+provider = KarlsruheProvider()
 
 
 async def test_async_get_canteens(hass: HomeAssistant, aioclient_mock):
@@ -30,7 +27,7 @@ async def test_async_get_canteens(hass: HomeAssistant, aioclient_mock):
         },
     )
 
-    canteens = await async_get_canteens(async_get_clientsession(hass))
+    canteens = await provider.async_get_canteens(async_get_clientsession(hass))
 
     assert canteens == [
         Canteen(id="aaa", name="Mensa Adenauerring"),
@@ -42,14 +39,14 @@ async def test_async_get_canteens_graphql_error(hass: HomeAssistant, aioclient_m
     aioclient_mock.post(API_URL, json={"errors": [{"message": "boom"}]})
 
     with pytest.raises(MensaApiError):
-        await async_get_canteens(async_get_clientsession(hass))
+        await provider.async_get_canteens(async_get_clientsession(hass))
 
 
 async def test_async_get_canteens_unreachable(hass: HomeAssistant, aioclient_mock):
     aioclient_mock.post(API_URL, exc=aiohttp.ClientConnectionError("down"))
 
     with pytest.raises(MensaApiError):
-        await async_get_canteens(async_get_clientsession(hass))
+        await provider.async_get_canteens(async_get_clientsession(hass))
 
 
 async def test_async_get_meal_plans_parses_lines_and_days(
@@ -107,7 +104,7 @@ async def test_async_get_meal_plans_parses_lines_and_days(
     )
 
     days = [date(2026, 7, 8), date(2026, 7, 9)]
-    result = await async_get_meal_plans(async_get_clientsession(hass), ["aaa"], days)
+    result = await provider.async_get_meal_plans(async_get_clientsession(hass), ["aaa"], days)
 
     assert list(result.keys()) == ["aaa"]
     meal_days = result["aaa"]
@@ -120,7 +117,7 @@ async def test_async_get_meal_plans_parses_lines_and_days(
 async def test_async_get_meal_plans_empty_input_returns_empty_days(
     hass: HomeAssistant, aioclient_mock
 ):
-    result = await async_get_meal_plans(async_get_clientsession(hass), ["aaa"], [])
+    result = await provider.async_get_meal_plans(async_get_clientsession(hass), ["aaa"], [])
     assert result == {"aaa": []}
 
 
@@ -129,7 +126,7 @@ async def test_async_get_meal_plans_missing_canteen_returns_empty_days(
 ):
     aioclient_mock.post(API_URL, json={"data": {"c0": None}})
 
-    result = await async_get_meal_plans(
+    result = await provider.async_get_meal_plans(
         async_get_clientsession(hass), ["aaa"], [date(2026, 7, 8)]
     )
 

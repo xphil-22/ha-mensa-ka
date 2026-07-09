@@ -1,0 +1,45 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Mensa",
+        "description": "Wähle eine Datenquelle aus.",
+        "data": {
+          "provider": "Datenquelle"
+        }
+      },
+      "canteens": {
+        "title": "Mensen auswählen",
+        "description": "Wähle die Mensen/Cafeterien aus, die du verfolgen möchtest.",
+        "data": {
+          "canteens": "Mensen",
+          "forecast_days": "Anzahl Tage im Voraus"
+        }
+      }
+    },
+    "error": {
+      "no_canteens_selected": "Wähle mindestens eine Mensa aus."
+    },
+    "abort": {
+      "cannot_connect": "Die ausgewählte Datenquelle konnte nicht erreicht werden. Bitte versuche es später erneut."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Mensa",
+        "description": "Wähle die Mensen/Cafeterien aus, die du verfolgen möchtest.",
+        "data": {
+          "canteens": "Mensen",
+          "forecast_days": "Anzahl Tage im Voraus"
+        }
+      }
+    },
+    "error": {
+      "no_canteens_selected": "Wähle mindestens eine Mensa aus."
+    },
+    "abort": {
+      "cannot_connect": "Die ausgewählte Datenquelle konnte nicht erreicht werden. Bitte versuche es später erneut."
+    }
+  }
+}

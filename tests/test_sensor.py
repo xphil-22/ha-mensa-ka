@@ -1,11 +1,11 @@
-"""Tests for custom_components.mensa_ka.sensor and shared meal-day helpers."""
+"""Tests for custom_components.mensa.sensor and shared meal-day helpers."""
 
 from datetime import date, datetime
 from unittest.mock import patch
 
-from custom_components.mensa_ka.api import Meal, MealDay, Price
-from custom_components.mensa_ka.coordinator import pick_current_meal_day
-from custom_components.mensa_ka.sensor import _group_by_line, _meal_to_attr
+from custom_components.mensa.coordinator import pick_current_meal_day
+from custom_components.mensa.providers.models import Meal, MealDay, Price
+from custom_components.mensa.sensor import _group_by_line, _meal_to_attr
 
 
 def _meal(
@@ -172,7 +172,7 @@ def test_pick_current_meal_day_prefers_today_when_today_has_meals():
     ]
 
     with patch(
-        "custom_components.mensa_ka.coordinator.dt_util.now",
+        "custom_components.mensa.coordinator.dt_util.now",
         return_value=datetime(2026, 7, 9, 8, 0, 0),
     ):
         assert pick_current_meal_day(meal_days) == meal_days[1]
@@ -189,7 +189,7 @@ def test_pick_current_meal_day_uses_next_non_empty_day_when_today_is_empty():
     ]
 
     with patch(
-        "custom_components.mensa_ka.coordinator.dt_util.now",
+        "custom_components.mensa.coordinator.dt_util.now",
         return_value=datetime(2026, 7, 9, 8, 0, 0),
     ):
         assert pick_current_meal_day(meal_days) == meal_days[1]
@@ -203,7 +203,7 @@ def test_pick_current_meal_day_returns_none_when_all_days_are_empty():
     ]
 
     with patch(
-        "custom_components.mensa_ka.coordinator.dt_util.now",
+        "custom_components.mensa.coordinator.dt_util.now",
         return_value=datetime(2026, 7, 9, 8, 0, 0),
     ):
         assert pick_current_meal_day(meal_days) is None

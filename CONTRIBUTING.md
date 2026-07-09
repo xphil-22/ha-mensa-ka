@@ -27,6 +27,16 @@ docker compose -f docker-compose.dev.yml up -d
 
 Then open `http://localhost:8123` and test the config flow via `Settings -> Devices & Services`.
 
+## Adding a provider
+
+A provider is a source of canteens and meal plans (e.g. one university's own API). To add one:
+
+1. Add a new module under `custom_components/mensa/providers/` implementing the `Provider` protocol from `providers/base.py` (`async_get_canteens`, `async_get_meal_plans`, `display_name`). See `providers/karlsruhe.py` for a full example.
+2. Register it in `PROVIDERS` in `providers/__init__.py`.
+3. Reuse the shared `Canteen`, `Price`, `Meal`, `MealDay` dataclasses from `providers/models.py` rather than inventing new ones — the config flow, coordinator, sensor, and calendar platforms are all written against those.
+
+No changes to the config flow, coordinator, or entity platforms are needed for a new provider with the same data shape.
+
 ## Pull Requests
 
 - Keep changes focused and small where possible.

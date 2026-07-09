@@ -1,9 +1,9 @@
-title: Karlsruher Mensen
-path: karlsruher-mensen
+title: Mensa
+path: mensa
 icon: mdi:silverware-fork-knife
 cards:
   # Single card, works for any number of configured canteens: it looks up every
-  # sensor entity belonging to the mensa_ka integration itself, so nothing here
+  # sensor entity belonging to the mensa integration itself, so nothing here
   # needs to be edited when you add, remove, or rename a canteen.
   #
   # Each serving line renders as its own collapsible <details> section (open by
@@ -24,12 +24,12 @@ cards:
   # parsed as Markdown again, and since they're indented 4+ spaces they turn
   # into a literal, escaped code block instead of rendered HTML.
   - type: markdown
-    title: Karlsruher Mensen
+    title: Mensa
     content: |-
-      {% set sensor_ids = integration_entities('mensa_ka') | select('match', 'sensor\\.') | list %}
+      {% set sensor_ids = integration_entities('mensa') | select('match', 'sensor\\.') | list %}
 
       {% if not sensor_ids %}
-      No Karlsruher Mensen canteens are configured yet. Add the integration
+      No canteens are configured yet. Add the integration
       under Settings -> Devices & Services to see meal plans here.
       {% else %}
       {% for entity in sensor_ids %}

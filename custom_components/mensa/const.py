@@ -1,12 +1,12 @@
-"""Constants for the Karlsruher Mensen integration."""
+"""Constants for the Mensa integration."""
 
 from datetime import timedelta
 
 from homeassistant.const import Platform
 
-DOMAIN = "mensa_ka"
-API_URL = "https://api.mensa-ka.de"
+DOMAIN = "mensa"
 
+CONF_PROVIDER = "provider"
 CONF_CANTEENS = "canteens"
 CONF_FORECAST_DAYS = "forecast_days"
 
@@ -18,9 +18,9 @@ MAX_FORECAST_DAYS = 30
 PLATFORMS = [Platform.CALENDAR, Platform.SENSOR]
 
 # Served via `_async_register_frontend_card` in __init__.py. Bump CARD_VERSION
-# whenever www/mensa-ka-card.js changes so browsers don't keep a stale cached
+# whenever www/mensa-card.js changes so browsers don't keep a stale cached
 # copy of the module.
-CARD_URL_PATH = "/mensa_ka-card/mensa-ka-card.js"
+CARD_URL_PATH = "/mensa-card/mensa-card.js"
 CARD_VERSION = "1"
 
 # Labels are taken verbatim (only shortened) from the descriptions the API itself
