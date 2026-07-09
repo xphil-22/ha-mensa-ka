@@ -127,7 +127,19 @@ const CARD_STYLE = `
   .chip.price { background: var(--secondary-background-color); font-weight: 600; }
   .chip.allergen { background: rgba(255, 152, 0, 0.22); }
   .chip.additive { background: var(--secondary-background-color); }
+  .meal-notes {
+    font-size: 0.85em;
+    font-style: italic;
+    color: var(--secondary-text-color);
+    margin-top: 8px;
+  }
 `;
+
+// Matches FOOD_TYPE_ICONS["default"] in const.py - shared by every meal type
+// that isn't specifically vegan/vegetarian (including "unknown"). Meals with
+// only this generic icon skip the thumbnail/prefix so a whole line of them
+// doesn't repeat the same emoji over and over.
+const GENERIC_DIET_ICON = "\u{1F37D}️";
 
 class MensaCard extends HTMLElement {
   constructor() {
@@ -236,20 +248,26 @@ class MensaCard extends HTMLElement {
   }
 
   _renderMeal(meal) {
-    const thumb = h("div", { class: "thumb" });
+    const hasDistinctIcon = !!meal.diet_icon && meal.diet_icon !== GENERIC_DIET_ICON;
+
+    let thumb = null;
     if (meal.image_url) {
+      thumb = h("div", { class: "thumb" });
       thumb.appendChild(h("img", { src: meal.image_url, alt: meal.name, loading: "lazy" }));
-    } else {
-      thumb.textContent = meal.diet_icon || "\u{1F37D}️";
+    } else if (hasDistinctIcon) {
+      thumb = h("div", { class: "thumb" }, meal.diet_icon);
     }
 
-    const chips = [
-      h(
-        "span",
-        { class: "chip price" },
-        `Student ${Number(meal.price_student).toFixed(2)} €`
-      ),
-    ];
+    const chips = [];
+    if (meal.price_student != null) {
+      chips.push(
+        h(
+          "span",
+          { class: "chip price" },
+          `Student ${Number(meal.price_student).toFixed(2)} €`
+        )
+      );
+    }
     if (meal.price_employee != null) {
       chips.push(
         h(
@@ -266,12 +284,21 @@ class MensaCard extends HTMLElement {
       chips.push(h("span", { class: "chip additive" }, additive));
     }
 
+    const notes = meal.notes || [];
+
     const info = h(
       "div",
       { class: "meal-info" },
-      h("div", { class: "meal-name" }, `${meal.diet_icon ? meal.diet_icon + " " : ""}${meal.name}`),
-      meal.diet_label ? h("div", { class: "meal-diet" }, meal.diet_label) : null,
-      h("div", { class: "chips" }, ...chips)
+      h(
+        "div",
+        { class: "meal-name" },
+        `${hasDistinctIcon ? meal.diet_icon + " " : ""}${meal.name}`
+      ),
+      meal.diet_label && meal.diet_label !== "Unknown"
+        ? h("div", { class: "meal-diet" }, meal.diet_label)
+        : null,
+      h("div", { class: "chips" }, ...chips),
+      notes.length ? h("div", { class: "meal-notes" }, notes.join(" · ")) : null
     );
 
     return h("div", { class: "meal" }, thumb, info);
